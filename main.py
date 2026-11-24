@@ -1,7 +1,9 @@
 from fastapi import FastAPI, HTTPException, status
 
+from distance import total_distance_km
 from models import RunCreate, RunPointCeate
 from repository import add_run_point, create_run, get_run, list_runs
+from pace import splits_plan, calculate_progress
 
 app = FastAPI()
 
@@ -11,7 +13,9 @@ def health():
 
 @app.post("/runs", status_code=status.HTTP_201_CREATED)
 def post_run(run: RunCreate):
-    return create_run(run)
+    splits = splits_plan(run.goal_distance_km, run.goal_time_minutes)
+    run = create_run(run)
+    return {**run, "splits": splits}
 
 @app.get("/runs")
 def read_runs():
@@ -25,7 +29,21 @@ def read_run(run_id: str):
     return run
 
 @app.post("/runs/{run_id}/points", status_code=status.HTTP_201_CREATED)
-def post_run_point(run_id: str, point: RunPointCeate):
-    if not add_run_point(run_id, point):
+def post_run_point(run_id: str, point: RunPointCeate) -> dict:
+    run = add_run_point(run_id, point)
+    if run is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Run not found")
-    return point
+    points = sorted(run["points"], key=lambda x: x["recorded_at"])
+    distance_km = total_distance_km(points)
+    elapsed_time = points[-1]["recorded_at"] - run["started_at"]
+    elapsed_time_minutes = max(0.0, elapsed_time.total_seconds() / 60)
+
+    progress = calculate_progress(run["goal_distance_km"], run["goal_time_minutes"], distance_km, elapsed_time_minutes)
+
+    return {
+        **point.model_dump(),
+        "distance_km": distance_km,
+        "elapsed_time_minutes": elapsed_time_minutes,
+        "progress": progress,
+    }
+
