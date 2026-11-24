@@ -6,8 +6,8 @@ from bson.errors import InvalidId
 
 def create_run(run: RunCreate) -> dict:
     document = {
-        "goal_distance_m": run.goal_distance_m,
-        "goal_time_s": run.goal_time_s,
+        "goal_distance_km": run.goal_distance_km,
+        "goal_time_minutes": run.goal_time_minutes,
         "started_at": datetime.now(),
         "finished_at": None,
         "points": [],
@@ -17,8 +17,8 @@ def create_run(run: RunCreate) -> dict:
 
     return {
         "id": str(result.inserted_id),
-        "goal_distance_m": document["goal_distance_m"],
-        "goal_time_s": document["goal_time_s"],
+        "goal_distance_km": document["goal_distance_km"],
+        "goal_time_minutes": document["goal_time_minutes"],
         "started_at": document["started_at"],
         "points": document["points"],
     }
@@ -28,8 +28,8 @@ def list_runs() -> list[dict]:
     return [
         {
             "id": str(document["_id"]),
-            "goal_distance_m": document["goal_distance_m"],
-            "goal_time_s": document["goal_time_s"],
+            "goal_distance_km": document["goal_distance_km"],
+            "goal_time_minutes": document["goal_time_minutes"],
             "started_at": document["started_at"],
             "finished_at": document["finished_at"],
             "points": document["points"],
@@ -50,8 +50,8 @@ def get_run(run_id: str) -> dict:
 
     return {
         "id": str(document["_id"]),
-        "goal_distance_m": document["goal_distance_m"],
-        "goal_time_s": document["goal_time_s"],
+        "goal_distance_km": document["goal_distance_km"],
+        "goal_time_minutes": document["goal_time_minutes"],
         "started_at": document["started_at"],
         "finished_at": document["finished_at"],
         "points": document["points"],
