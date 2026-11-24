@@ -1,4 +1,6 @@
 from datetime import datetime
+
+from pymongo import ReturnDocument
 from database import runs
 from models import RunCreate, RunPointCeate
 from bson import ObjectId
@@ -63,5 +65,6 @@ def add_run_point(run_id: str, point: RunPointCeate) -> bool:
     except InvalidId:
         return False
 
-    result = runs.update_one({"_id": mongo_id}, {"$push": {"points": point.model_dump()}})
-    return result.matched_count > 0
+    result = runs.find_one_and_update({"_id": mongo_id}, {"$push": {"points": point.model_dump()}},
+    return_document=ReturnDocument.AFTER )
+    return result
