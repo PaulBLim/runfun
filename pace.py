@@ -6,7 +6,7 @@ def pace(distance_km: float, time_minutes: float) -> Optional[float]:
         return None
     return time_minutes / distance_km
 
-def splits_plan(goal_distance_km: float, goal_time_minutes: int) -> Optional[list[dict]]:
+def splits_plan(goal_distance_km: float, goal_time_minutes: float) -> Optional[list[dict]]:
     """Splits plan is a list of distances to cover in each split."""
     if goal_distance_km <= 0 or goal_time_minutes <= 0:
         return None
@@ -20,7 +20,7 @@ def splits_plan(goal_distance_km: float, goal_time_minutes: int) -> Optional[lis
         } for distance_km in distance_splits
     ]
 
-def calculate_progress(goal_distance_km: float, goal_time_minutes: int, distance_km: float, time_elapsed_minutes: int) -> Optional[dict]:
+def calculate_progress(goal_distance_km: float, goal_time_minutes: float, distance_km: float, time_elapsed_minutes: float) -> Optional[dict]:
     """Compare the distance covered so far with the goal pace.
     """
     if goal_distance_km <= 0 or goal_time_minutes <= 0 or distance_km < 0 or time_elapsed_minutes < 0:
@@ -28,14 +28,14 @@ def calculate_progress(goal_distance_km: float, goal_time_minutes: int, distance
 
     expected_minutes = goal_time_minutes * distance_km / goal_distance_km
     minutes_behind = time_elapsed_minutes - expected_minutes
-    remianing_km = goal_distance_km - distance_km
-    remianing_time = goal_time_minutes - time_elapsed_minutes
+    remaining_km = goal_distance_km - distance_km
+    remaining_time = goal_time_minutes - time_elapsed_minutes
 
-    if remianing_km <= 0:
-        status = "goal_reached" if remianing_time <= 0 else "goal_missed"
-    elif remianing_time <= 0:
+    if remaining_km <= 0:
+        status = "goal_reached" if remaining_time >= 0 else "goal_missed"
+    elif remaining_time <= 0:
         status = "goal_missed"
-    elif minutes_behind <= 0.01:
+    elif abs(minutes_behind) <= 0.01:
         minutes_behind = 0.0
         status = "on_plan"
     elif minutes_behind > 0:
@@ -46,8 +46,8 @@ def calculate_progress(goal_distance_km: float, goal_time_minutes: int, distance
     return {
         "average_pace_min_per_km": pace(distance_km, time_elapsed_minutes),
         "minutes_behind": minutes_behind,
-        "required_pace_min_per_km": pace(remianing_km, remianing_time),
+        "required_pace_min_per_km": pace(remaining_km, remaining_time),
         "status": status,
-        "remaining_distance_km": remianing_km,
-        "remaining_time_minutes": remianing_time,
+        "remaining_distance_km": remaining_km,
+        "remaining_time_minutes": remaining_time,
     }

@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field, AwareDatetime
 
 class RunCreate(BaseModel):
     goal_distance_km: float = Field(gt=0, description="distance of the run in kilometers")
-    goal_time_minutes: int = Field(gt=0, description="The time of the run in minutes")
+    goal_time_minutes: float = Field(gt=0, description="The time of the run in minutes")
 
 class RunPointCeate(BaseModel):
     latitude: float = Field(ge=-90, le=90)
