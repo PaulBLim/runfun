@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from pymongo import ReturnDocument
 from database import runs
@@ -10,7 +10,7 @@ def create_run(run: RunCreate) -> dict:
     document = {
         "goal_distance_km": run.goal_distance_km,
         "goal_time_minutes": run.goal_time_minutes,
-        "started_at": datetime.now(),
+        "started_at": datetime.now(timezone.utc),
         "finished_at": None,
         "points": [],
     }
