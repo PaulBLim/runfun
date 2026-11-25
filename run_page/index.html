@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Runfun</title>
+  <link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin="anonymous">
+
+  <script defer
+        src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin="anonymous"></script>
+  <script src="./run.js" defer></script>
+  <style>
+    body { font: 1rem system-ui; max-width: 30rem; margin: 2rem auto; padding: 0 1rem; }
+    label { display: block; margin-bottom: 0.75rem; }
+    input, button { font: inherit; padding: 0.5rem; }
+    dd { margin: 0 0 1rem; font-size: 1.5rem; }
+    #elapsed-time {
+        color: #16703a;
+        font-variant-numeric: tabular-nums;
+    }
+    #elapsed-time.over-target {
+        color: #b42318;
+     }
+     #run-map {
+        height: 320px;
+        margin-top: 1rem;
+        border-radius: 8px;
+        }
+    #pace-status {
+    color: #475569;
+    font-weight: 600;
+    }
+
+    #pace-status[data-tone="green"] {
+    color: #16703a;
+    }
+
+    #pace-status[data-tone="red"] {
+    color: #b42318;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Runfun</h1>
+
+    <form id="goal-form">
+      <label>
+        Goal distance (km)
+        <input name="distance" type="number" min="0.01" step="0.01" value="3" required>
+      </label>
+      <label>
+        Goal time (minutes)
+        <input name="minutes" type="number" min="1" step="1" value="18" required>
+      </label>
+      <button id="preview-plan" type="button">Preview plan</button>
+      <button id="start" type="submit">Start</button>
+      <button id="stop" type="button" disabled>Stop</button>
+    </form>
+    <p id="plan-message" role="status"></p>
+
+    <section id="split-plan" aria-labelledby="split-heading" hidden>
+        <h2 id="split-heading">Target splits</h2>
+        <ul id="split-list"></ul>
+    </section>
+
+    <p id="message" role="status">Ready to start.</p>
+
+    <dl>
+      <dt>Elapsed time</dt>
+      <dd>
+        <span id="elapsed-time">00:00</span>
+        <small id="target-time-passed" hidden>Target time passed</small>
+      </dd>
+      <dt>Distance</dt>
+      <dd id="distance">0.000 km</dd>
+      <dt>Average pace</dt>
+      <dd id="average-pace">—</dd>
+      <dt>Required pace</dt>
+      <dd id="required-pace">—</dd>
+      <dt>Pace status</dt>
+      <dd><span id="pace-status" role="status">—</span></dd>
+    </dl>
+    <div id="run-map" role="region" aria-label="Run route map"></div>
+  </main>
+</body>
+</html>
