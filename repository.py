@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from typing import Optional
 
 from pymongo import ReturnDocument
 from database import runs
@@ -65,6 +66,19 @@ def add_run_point(run_id: str, point: RunPointCeate) -> bool:
     except InvalidId:
         return False
 
-    result = runs.find_one_and_update({"_id": mongo_id}, {"$push": {"points": point.model_dump()}},
+    result = runs.find_one_and_update({"_id": mongo_id, "finished_at": None}, {"$push": {"points": point.model_dump()}},
     return_document=ReturnDocument.AFTER )
     return result
+
+def finish_run(run_id: str) -> Optional[dict]:
+    try:
+        mongo_id = ObjectId(run_id)
+    except InvalidId:
+        return None
+
+    run = runs.find_one_and_update({"_id": mongo_id}, {"$set": {"finished_at": datetime.now(timezone.utc)}},
+    return_document=ReturnDocument.AFTER )
+    if run is None:
+        return None
+
+    return runs.find_one({"_id": mongo_id})
